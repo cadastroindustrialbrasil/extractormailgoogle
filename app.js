@@ -34,6 +34,8 @@ let options = {
 
 async function app() {
 
+    console.log("Abrindo Browser");
+
     let browser = await puppeteer.launch(options);
     let page = await browser.newPage();
 
@@ -41,12 +43,13 @@ async function app() {
         type: QueryTypes.SELECT
     });
 
-    var i = 0
-    while (getConsultas.length > 0) {
+    var i = getConsultas.length
+    while (i > 0) {
 
         var url = getConsultas[i].consulta.replace(/\s/g, "+");
 
         await page.goto("https://www.google.com.br/search?q=" + url)
+        console.log("Pesquisando...");
 
         await delay(5000)
 
@@ -59,6 +62,7 @@ async function app() {
 
             await page.goto(links[j].href)
             await delay(5000)
+            console.log("Abrindo novo link");
 
             data = await page.evaluate(() => document.querySelector('*').outerHTML);
 
@@ -69,6 +73,7 @@ async function app() {
             if (emails) {
 
                 emails.forEach(async email => {
+                    console.log("Coletando emails");
 
                     var verEmail = await sequelize.query("SELECT id FROM `emails` WHERE email="+email+"", {
                         type: QueryTypes.SELECT
@@ -83,9 +88,7 @@ async function app() {
             }
         }
 
-        break
-
-        i++
+        i--
     };
 
 
