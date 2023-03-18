@@ -49,8 +49,6 @@ async function app() {
 
         var url = getConsultas[x].consulta.replace(/\s/g, "+");
 
-        console.log(getConsultas[x])
-
         await page.goto("https://www.google.com.br/search?q=" + url)
         console.log("Pesquisando...");
 
