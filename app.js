@@ -73,10 +73,10 @@ async function app() {
 
             if (emails) {
 
-                emails.forEach(async email => {
+                emails.forEach(async function(email) {
                     console.log("Coletando emails");
 
-                    var verEmail = await sequelize.query("SELECT id FROM `emails` WHERE email="+await email+"", {
+                    var verEmail = await sequelize.query("SELECT id FROM `emails` WHERE email="+email+"", {
                         type: QueryTypes.SELECT
                     });
 
