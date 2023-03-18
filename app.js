@@ -75,13 +75,16 @@ async function app() {
 
             if (emails) {
 
-                emails.forEach(async function(email) {  
-                    
-                    console.log("Coletando emails");
+                console.log("Coletando emails");
 
+                emails.forEach(async function(email) {                     
+                    
                     var verEmail = await sequelize.query("SELECT id FROM `emails` WHERE email='"+email+"'", {
                         type: QueryTypes.SELECT
                    });
+
+                   console.log(vermail)
+                   console.log(email)
 
                     if(verEmail != email){
                     await sequelize.query("INSERT INTO `emails`(`email`, `estado`, `categoria`) VALUES ('" + email + "','" + getConsultas[x].estado + "','" + getConsultas[x].categoria + "')", {
