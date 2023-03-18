@@ -43,8 +43,6 @@ async function app() {
         type: QueryTypes.SELECT
     });
 
-    console.log(getConsultas)
-
     var i = getConsultas.length
     while (i > 0) {
 
