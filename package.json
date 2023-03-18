@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon app.js",
-    "railway-start": "node app.js"
+    "start": "nodemon app.js"
   },
   "author": "",
   "license": "ISC",
