@@ -49,6 +49,8 @@ async function app() {
 
         var url = getConsultas[x].consulta.replace(/\s/g, "+");
 
+        console.log(getConsultas[x])
+
         await page.goto("https://www.google.com.br/search?q=" + url)
         console.log("Pesquisando...");
 
@@ -73,12 +75,13 @@ async function app() {
 
             if (emails) {
 
-                emails.forEach(async function(email) {
+                emails.forEach(async function(email) {  
+                    
                     console.log("Coletando emails");
 
                     var verEmail = await sequelize.query("SELECT id FROM `emails` WHERE email='"+email+"'", {
                         type: QueryTypes.SELECT
-                    });
+                   });
 
                     if(verEmail != email){
                     await sequelize.query("INSERT INTO `emails`(`email`, `estado`, `categoria`) VALUES ('" + email + "','" + getConsultas[i].estado + "','" + getConsultas[i].categoria + "')", {
