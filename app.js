@@ -82,9 +82,10 @@ async function app() {
                     var verEmail = await sequelize.query("SELECT id FROM `emails` WHERE email='"+email+"'", {
                         type: QueryTypes.SELECT
                    });
-
-                   console.log(vermail)
+                   console.log("---")
+                   console.log(verEmail)
                    console.log(email)
+                   console.log("---")
 
                     if(verEmail != email){
                     await sequelize.query("INSERT INTO `emails`(`email`, `estado`, `categoria`) VALUES ('" + email + "','" + getConsultas[x].estado + "','" + getConsultas[x].categoria + "')", {
