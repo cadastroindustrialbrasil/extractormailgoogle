@@ -84,7 +84,7 @@ async function app() {
                    });
 
                     if(verEmail != email){
-                    await sequelize.query("INSERT INTO `emails`(`email`, `estado`, `categoria`) VALUES ('" + email + "','" + getConsultas[i].estado + "','" + getConsultas[i].categoria + "')", {
+                    await sequelize.query("INSERT INTO `emails`(`email`, `estado`, `categoria`) VALUES ('" + email + "','" + getConsultas[x].estado + "','" + getConsultas[x].categoria + "')", {
                         type: QueryTypes.INSERT
                     });
                 }
