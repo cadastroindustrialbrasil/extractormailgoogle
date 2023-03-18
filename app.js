@@ -44,9 +44,10 @@ async function app() {
     });
 
     var i = getConsultas.length
+    var x = 0
     while (i > 0) {
 
-        var url = getConsultas[i].consulta.replace(/\s/g, "+");
+        var url = getConsultas[x].consulta.replace(/\s/g, "+");
 
         await page.goto("https://www.google.com.br/search?q=" + url)
         console.log("Pesquisando...");
@@ -89,6 +90,7 @@ async function app() {
         }
 
         i--
+        x++
     };
 
 
