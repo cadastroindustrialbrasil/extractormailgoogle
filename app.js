@@ -27,12 +27,9 @@ sequelize.authenticate().then(() => { }).catch(err => {
 });
 
 let options = {
-    defaultViewport: {
-        width: 1366,
-        height: 768,
-    },
-    args: ['--no-sandbox'],
-    headless: false,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    ignoreDefaultArgs: ['--disable-extensions'],
+    headless: true,
 };
 
 async function app() {
