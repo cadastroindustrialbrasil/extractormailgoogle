@@ -118,8 +118,10 @@ async function app() {
                     }
                     }
                 }
+            
+                page.close()
 
-                await delay(6000)
+                await delay(90000)
 
                /* await page.goto("https://www.google.com.br/search?q=" + url)
                 await delay(6000)
