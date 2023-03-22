@@ -10,7 +10,7 @@ const {
     JSDOM
 } = jsdom;
 
-const sequelize = new Sequelize('eduard72_consultagoogle', 'eduard72_felipe', 'oQnD~rzZWG&9', {
+var sequelize = new Sequelize('eduard72_consultagoogle', 'eduard72_felipe', 'oQnD~rzZWG&9', {
     host: 'sh-pro20.hostgator.com.br',
     dialect: "mysql",
     define: {
@@ -29,78 +29,117 @@ sequelize.authenticate().then(() => { }).catch(err => {
 let options = {
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
     ignoreDefaultArgs: ['--disable-extensions'],
-    headless: true,
+    headless: false,
 };
+
+app()
 
 async function app() {
 
-    console.log("Abrindo Browser");
-
     let browser = await puppeteer.launch(options);
-    let page = await browser.newPage();
 
-    const getConsultas = await sequelize.query("SELECT * FROM `consultas` WHERE status=0 ORDER BY RAND()", {
-        type: QueryTypes.SELECT
-    });
+    try {
+        console.log("Limpando o database")
 
-    var i = getConsultas.length
-    var x = 0
-    while (i > 0) {
+        await sequelize.query("DELETE from emails where id not in ( SELECT * FROM(select min(id) from emails group by email) AS temp_tab)");
+        await sequelize.query('DELETE FROM emails WHERE email like "%1%" || email like "%2%" || email like "%3%" ||email like "%4%" || email like "%5%" || email like "%6%" || email like "%7%" || email like "%8%" || email like "%9%"');
 
-        var url = getConsultas[x].consulta.replace(/\s/g, "+");
+        let page = await browser.newPage();
+        console.log("Abrindo Browser");
 
-        await page.goto("https://www.google.com.br/search?q=" + url)
-        console.log("Pesquisando...");
 
-        await delay(5000)
+        const getConsultas = await sequelize.query("SELECT * FROM `consultas` WHERE status=0 ORDER BY RAND()", {
+            type: QueryTypes.SELECT
+        });
 
-        data = await page.evaluate(() => document.querySelector('*').outerHTML);
-        dom = new JSDOM(data)
+        var i = getConsultas.length
+        var x = 0
+        while (i > 0) {
 
-        var links = dom.window.document.querySelectorAll(".yuRUbf > a")
+            var url = getConsultas[x].consulta.replace(/\s/g, "+");
 
-        for (var j = 0; j < links.length; j++) {
+            await sequelize.query("UPDATE consultas SET status=1 WHERE id=" + getConsultas[x].id + "");
+            console.log("Update Status")
 
-            await page.goto(links[j].href)
-            await delay(5000)
-            console.log("Abrindo novo link");
+            await page.goto("https://www.google.com.br/search?q=" + url)
+            console.log("Pesquisando...");
 
             data = await page.evaluate(() => document.querySelector('*').outerHTML);
+            dom = new JSDOM(data)
 
-            var emailRegex = /\b[\w\.-]+@[\w\.-]+\.\w{2,}\b/g;
-            var emails = data.match(emailRegex);
-            console.log(emails);
+            var pages = dom.window.document.querySelectorAll("td > a[class='fl']")
+            var npages = 0
 
-            if (emails) {
+            if (pages.length > 7) {
+                npages = 7
+            } else (
+                npages = pages.length
+            )
 
-                console.log("Coletando emails");
+            if (npages == 0) { npages = 1 }
 
-                emails.forEach(async function(email) {                     
-                    
-                    var verEmail = await sequelize.query("SELECT id FROM `emails` WHERE email='"+email+"'", {
-                        type: QueryTypes.SELECT
-                   });
-                   console.log("---")
-                   console.log(verEmail)
-                   console.log(email)
-                   console.log("---")
+            for (var y = 0; y < npages; y++) {
 
-                    if(verEmail != email){
-                    await sequelize.query("INSERT INTO `emails`(`email`, `estado`, `categoria`) VALUES ('" + email + "','" + getConsultas[x].estado + "','" + getConsultas[x].categoria + "')", {
-                        type: QueryTypes.INSERT
-                    });
+
+                console.log("Página " + (y + 1))
+
+                data = await page.evaluate(() => document.querySelector('*').outerHTML);
+                dom = new JSDOM(data)
+
+                var links = dom.window.document.querySelectorAll(".yuRUbf > a")
+
+                for (var j = 0; j < links.length; j++) {
+
+                    var link = links[j].href
+
+                    if (!link.includes("pdf")) {
+
+                        await page.goto(links[j].href)
+                        await page.setDefaultTimeout(60000)
+
+                        await delay(5000)
+                        console.log(links[j].href);
+
+                        data = await page.evaluate(() => document.querySelector('*').outerHTML);
+
+                        var emailRegex = /\b[\w\.-]+@[\w\.-]+\.\w{2,}\b/g;
+                        var emails = data.match(emailRegex);
+                        console.log(emails);
+
+                        if (emails) {
+
+                            emails.forEach(async function (email) {
+
+                                await sequelize.query("INSERT INTO `emails`(`email`, `estado`, `categoria`) VALUES ('" + email + "','" + getConsultas[x].estado + "','" + getConsultas[x].categoria + "')", {
+                                    type: QueryTypes.INSERT
+                                });
+
+                            });
+                        }
+                    }
                 }
-                });
+
+                await delay(6000)
+
+                await page.goto("https://www.google.com.br/search?q=" + url)
+                await delay(6000)
+
+                await page.click('a[aria-label="Page ' + (y + 2) + '"]')
+                await delay(6000)
+
+                links = []
+
             }
-        }
 
-        i--
-        x++
-    };
+            i--
+            x++
+        };
 
-
-
+    } catch (err) {
+        console.log(err)
+        browser.close()
+        app()
+    }
 
 
 }
-app()
