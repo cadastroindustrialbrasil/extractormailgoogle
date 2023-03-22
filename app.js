@@ -116,7 +116,7 @@ async function app() {
 
                         });
                     }
-                    //}
+                    }
                 }
 
                 await delay(6000)
@@ -129,7 +129,7 @@ async function app() {
 
                 links = []
 
-            }
+           // }
 
             i--
             x++
