@@ -67,65 +67,65 @@ async function app() {
             data = await page.evaluate(() => document.querySelector('*').outerHTML);
             dom = new JSDOM(data)
 
-            var pages = dom.window.document.querySelectorAll("td > a[class='fl']")
-            var npages = 0
+            /* var pages = dom.window.document.querySelectorAll("td > a[class='fl']")
+             var npages = 0
+ 
+             if (pages.length > 7) {
+                 npages = 7
+             } else (
+                 npages = pages.length
+             )
+ 
+             if (npages == 0) { npages = 1 }
+ 
+             for (var y = 0; y < npages; y++) {
 
-            if (pages.length > 7) {
-                npages = 7
-            } else (
-                npages = pages.length
-            )
 
-            if (npages == 0) { npages = 1 }
+            console.log("Página " + (y + 1))
 
-            for (var y = 0; y < npages; y++) {
+            data = await page.evaluate(() => document.querySelector('*').outerHTML);
+            dom = new JSDOM(data)*/
 
+            var links = dom.window.document.querySelectorAll(".yuRUbf > a")
 
-                console.log("Página " + (y + 1))
+            for (var j = 0; j < links.length; j++) {
 
-                data = await page.evaluate(() => document.querySelector('*').outerHTML);
-                dom = new JSDOM(data)
+                var link = links[j].href
 
-                var links = dom.window.document.querySelectorAll(".yuRUbf > a")
+                if (!link.includes("pdf")) {
 
-                for (var j = 0; j < links.length; j++) {
+                    await page.goto(links[j].href)
+                    await page.setDefaultTimeout(60000)
 
-                    var link = links[j].href
+                    await delay(5000)
+                    console.log(links[j].href);
 
-                    if (!link.includes("pdf")) {
+                    data = await page.evaluate(() => document.querySelector('*').outerHTML);
 
-                        await page.goto(links[j].href)
-                        await page.setDefaultTimeout(60000)
+                    var emailRegex = /\b[\w\.-]+@[\w\.-]+\.\w{2,}\b/g;
+                    var emails = data.match(emailRegex);
+                    console.log(emails);
 
-                        await delay(5000)
-                        console.log(links[j].href);
+                    if (emails) {
 
-                        data = await page.evaluate(() => document.querySelector('*').outerHTML);
+                        emails.forEach(async function (email) {
 
-                        var emailRegex = /\b[\w\.-]+@[\w\.-]+\.\w{2,}\b/g;
-                        var emails = data.match(emailRegex);
-                        console.log(emails);
-
-                        if (emails) {
-
-                            emails.forEach(async function (email) {
-
-                                await sequelize.query("INSERT INTO `emails`(`email`, `estado`, `categoria`) VALUES ('" + email + "','" + getConsultas[x].estado + "','" + getConsultas[x].categoria + "')", {
-                                    type: QueryTypes.INSERT
-                                });
-
+                            await sequelize.query("INSERT INTO `emails`(`email`, `estado`, `categoria`) VALUES ('" + email + "','" + getConsultas[x].estado + "','" + getConsultas[x].categoria + "')", {
+                                type: QueryTypes.INSERT
                             });
-                        }
+
+                        });
                     }
+                    //}
                 }
 
                 await delay(6000)
 
-                await page.goto("https://www.google.com.br/search?q=" + url)
+               /* await page.goto("https://www.google.com.br/search?q=" + url)
                 await delay(6000)
 
                 await page.click('a[aria-label="Page ' + (y + 2) + '"]')
-                await delay(6000)
+                await delay(6000)*/
 
                 links = []
 
