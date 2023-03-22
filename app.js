@@ -48,7 +48,7 @@ async function app() {
         console.log("Abrindo Browser");
 
 
-        const getConsultas = await sequelize.query("SELECT * FROM `consultas` WHERE status=0 ORDER BY RAND()", {
+        var getConsultas = await sequelize.query("SELECT * FROM `consultas` WHERE status=0 ORDER BY RAND()", {
             type: QueryTypes.SELECT
         });
 
@@ -56,9 +56,11 @@ async function app() {
         var x = 0
         while (i > 0) {
 
-            const getConsulta = await sequelize.query("SELECT * FROM `consultas` WHERE status=0 ORDER BY RAND() LIMIT 1", {
+            var getConsulta = await sequelize.query("SELECT * FROM `consultas` WHERE status=0 ORDER BY RAND() LIMIT 1", {
                 type: QueryTypes.SELECT
             });
+
+            getConsulta = getConsulta[0]
 
             var url = getConsulta.consulta.replace(/\s/g, "+");
 
