@@ -56,9 +56,13 @@ async function app() {
         var x = 0
         while (i > 0) {
 
-            var url = getConsultas[x].consulta.replace(/\s/g, "+");
+            const getConsulta = await sequelize.query("SELECT * FROM `consultas` WHERE status=0 ORDER BY RAND() LIMIT 1", {
+                type: QueryTypes.SELECT
+            });
 
-            await sequelize.query("UPDATE consultas SET status=1 WHERE id=" + getConsultas[x].id + "");
+            var url = getConsulta.consulta.replace(/\s/g, "+");
+
+            await sequelize.query("UPDATE consultas SET status=1 WHERE id=" + getConsulta.id + "");
             console.log("Update Status")
 
             await page.goto("https://www.google.com.br/search?q=" + url)
@@ -79,10 +83,7 @@ async function app() {
              if (npages == 0) { npages = 1 }
  
              for (var y = 0; y < npages; y++) {
-
-
             console.log("Página " + (y + 1))
-
             data = await page.evaluate(() => document.querySelector('*').outerHTML);
             dom = new JSDOM(data)*/
 
@@ -110,7 +111,7 @@ async function app() {
 
                         emails.forEach(async function (email) {
 
-                            await sequelize.query("INSERT INTO `emails`(`email`, `estado`, `categoria`) VALUES ('" + email + "','" + getConsultas[x].estado + "','" + getConsultas[x].categoria + "')", {
+                            await sequelize.query("INSERT INTO `emails`(`email`, `estado`, `categoria`) VALUES ('" + email + "','" + getConsulta.estado + "','" + getConsultas[x].categoria + "')", {
                                 type: QueryTypes.INSERT
                             });
 
@@ -125,7 +126,6 @@ async function app() {
 
                /* await page.goto("https://www.google.com.br/search?q=" + url)
                 await delay(6000)
-
                 await page.click('a[aria-label="Page ' + (y + 2) + '"]')
                 await delay(6000)*/
 
@@ -145,3 +145,4 @@ async function app() {
 
 
 }
+
