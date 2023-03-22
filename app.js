@@ -44,7 +44,7 @@ async function app() {
         await sequelize.query("DELETE from emails where id not in ( SELECT * FROM(select min(id) from emails group by email) AS temp_tab)");
         await sequelize.query('DELETE FROM emails WHERE email like "%1%" || email like "%2%" || email like "%3%" ||email like "%4%" || email like "%5%" || email like "%6%" || email like "%7%" || email like "%8%" || email like "%9%"');
 
-        let page = await browser.newPage();
+        var page = await browser.newPage();
         console.log("Abrindo Browser");
 
 
@@ -55,7 +55,7 @@ async function app() {
         var i = getConsultas.length
         var x = 0
         while (i > 0) {
-
+                    
             var getConsulta = await sequelize.query("SELECT * FROM `consultas` WHERE status=0 ORDER BY RAND() LIMIT 1", {
                 type: QueryTypes.SELECT
             });
@@ -127,6 +127,8 @@ async function app() {
                 page.close()
 
                 await delay(90000)
+            
+            page = await browser.newPage();
 
                /* await page.goto("https://www.google.com.br/search?q=" + url)
                 await delay(6000)
