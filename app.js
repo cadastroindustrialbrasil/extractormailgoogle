@@ -29,7 +29,7 @@ sequelize.authenticate().then(() => { }).catch(err => {
 let options = {
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
     ignoreDefaultArgs: ['--disable-extensions'],
-    headless: false,
+    headless: true,
 };
 
 app()
