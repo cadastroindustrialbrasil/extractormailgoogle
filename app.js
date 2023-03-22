@@ -60,9 +60,11 @@ async function app() {
                 type: QueryTypes.SELECT
             });
 
-            getConsulta = getConsulta[0]
-
+            getConsulta = getConsulta[0]          
+            
             var url = getConsulta.consulta.replace(/\s/g, "+");
+            
+            console.log(url)
 
             await sequelize.query("UPDATE consultas SET status=1 WHERE id=" + getConsulta.id + "");
             console.log("Update Status")
