@@ -10,6 +10,13 @@ const {
     JSDOM
 } = jsdom;
 
+const express = require('express');
+const api = express();
+api.use(express.json());
+api.use(express.urlencoded({
+  extended: true
+}));
+
 var sequelize = new Sequelize('eduard72_consultagoogle', 'eduard72_felipe', 'oQnD~rzZWG&9', {
     host: 'sh-pro20.hostgator.com.br',
     dialect: "mysql",
@@ -32,7 +39,11 @@ let options = {
     headless: true,
 };
 
-app()
+api.post('/',  (req, res) => {   
+    app()
+  })
+
+
 
 async function app() {
 
@@ -44,7 +55,7 @@ async function app() {
         await sequelize.query("DELETE from emails where id not in ( SELECT * FROM(select min(id) from emails group by email) AS temp_tab)");
         await sequelize.query('DELETE FROM emails WHERE email like "%1%" || email like "%2%" || email like "%3%" ||email like "%4%" || email like "%5%" || email like "%6%" || email like "%7%" || email like "%8%" || email like "%9%"');
 
-        var page = await browser.newPage();
+        let page = await browser.newPage();
         console.log("Abrindo Browser");
 
 
@@ -55,16 +66,14 @@ async function app() {
         var i = getConsultas.length
         var x = 0
         while (i > 0) {
-                    
+
             var getConsulta = await sequelize.query("SELECT * FROM `consultas` WHERE status=0 ORDER BY RAND() LIMIT 1", {
                 type: QueryTypes.SELECT
             });
 
-            getConsulta = getConsulta[0]          
-            
+            getConsulta = getConsulta[0]
+
             var url = getConsulta.consulta.replace(/\s/g, "+");
-            
-            console.log(url)
 
             await sequelize.query("UPDATE consultas SET status=1 WHERE id=" + getConsulta.id + "");
             console.log("Update Status")
@@ -127,8 +136,6 @@ async function app() {
                 page.close()
 
                 await delay(90000)
-            
-            page = await browser.newPage();
 
                /* await page.goto("https://www.google.com.br/search?q=" + url)
                 await delay(6000)
