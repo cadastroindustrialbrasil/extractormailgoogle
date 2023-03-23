@@ -41,6 +41,7 @@ let options = {
 
 api.post('/',  (req, res) => {   
     app()
+    res.status(200).end()
   })
 
 
