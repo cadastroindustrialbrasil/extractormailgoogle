@@ -44,6 +44,7 @@ api.post('/',  (req, res) => {
     res.status(200).end()
   })
 
+  app()
 
 
 async function app() {
